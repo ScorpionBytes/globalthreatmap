@@ -1,16 +1,14 @@
 FROM node:20-alpine
 
-RUN apk add --no-cache git
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
 
-RUN git clone https://github.com/unicodeveloper/globalthreatmap.git .
-
+COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile || pnpm install
 
-# Only NEXT_PUBLIC_ vars need build-time inlining (client bundle)
-# Server-side secrets (API keys etc) are injected at runtime by Railway
+COPY . .
+
 ARG NEXT_PUBLIC_APP_MODE
 ARG NEXT_PUBLIC_MAPBOX_TOKEN
 ARG NEXT_PUBLIC_REDIRECT_URI
